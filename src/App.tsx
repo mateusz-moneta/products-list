@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
+import { fetchProducts, selectAllProducts } from './state/products';
+import { useAppDispatch, useAppSelector } from './hooks';
+
 import './App.scss';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const dispatch = useAppDispatch();
+
+  const products = useSelector(selectAllProducts);
+
+  const productsError = useAppSelector((state) => state.products.error);
+  const productsStatus = useAppSelector((state) => state.products.status);
+
+  useEffect(() => {
+    if (productsStatus === 'idle') {
+      dispatch(fetchProducts({ page: 1, perPage: 5 }));
+    }
+  }, [productsStatus, dispatch]);
+
+  return <div className="App"></div>;
 }
 
 export default App;
