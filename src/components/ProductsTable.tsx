@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 
 import { Product } from '../models';
 
-export default function ProductsTable({ products }: { products: Product[] }) {
+const ProductsTable = ({ products }: { products: Product[] }) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="data table">
@@ -36,4 +36,6 @@ export default function ProductsTable({ products }: { products: Product[] }) {
       </Table>
     </TableContainer>
   );
-}
+};
+
+export default React.memo(ProductsTable);
