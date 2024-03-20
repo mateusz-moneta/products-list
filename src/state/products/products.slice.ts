@@ -1,18 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-import {PaginationList, Product} from "../../models";
+import { PaginationList, Product } from '../../models';
 
 export interface ProductsState {
-    error: string | null;
-    products: PaginationList<Product> | null;
-    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
+  products: PaginationList<Product> | null;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
 }
 
 const initialState: ProductsState = {
-    error: null,
-    products: null,
-    status: 'idle',
+  error: null,
+  products: null,
+  status: 'idle',
 };
 
 const name = 'products';
