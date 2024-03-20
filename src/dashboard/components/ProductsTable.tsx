@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -7,8 +8,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
+import TablePagination from '@mui/material/TablePagination';
+
 import { Product } from '../../models';
-import { TablePagination } from '@mui/material';
+import DetailsModal from './DetailsModal';
 
 const ProductsTable = ({
   handleChangePage,
@@ -26,6 +29,11 @@ const ProductsTable = ({
   products: Product[];
   total: number;
 }) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => setOpen(false);
+  const handleOpen = () => setOpen(true);
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -41,6 +49,7 @@ const ProductsTable = ({
           <TableBody>
             {(products || []).map(({ color, id, name, year }: Product) => (
               <TableRow
+                onClick={handleOpen}
                 key={name}
                 sx={{
                   '&:last-child td, &:last-child th': { border: 0 },
@@ -64,6 +73,8 @@ const ProductsTable = ({
         rowsPerPage={perPage}
         rowsPerPageOptions={[]}
       />
+
+      <DetailsModal handleClose={handleClose} open={open} />
     </>
   );
 };
