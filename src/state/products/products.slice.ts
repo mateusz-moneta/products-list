@@ -5,13 +5,13 @@ import { PaginationList, Product } from '../../models';
 
 export interface ProductsState {
   error: string | null;
-  products: PaginationList<Product> | null;
+  paginationList: PaginationList<Product> | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
 }
 
 const initialState: ProductsState = {
   error: null,
-  products: null,
+  paginationList: null,
   status: 'idle',
 };
 
@@ -41,9 +41,9 @@ export const productsSlice = createSlice({
       .addCase(fetchProducts.pending, (state, action) => {
         state.status = 'loading';
       })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
+      .addCase(fetchProducts.fulfilled, (state, { payload }) => {
         state.status = 'succeeded';
-        state.products = action.payload;
+        state.paginationList = payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
@@ -51,7 +51,5 @@ export const productsSlice = createSlice({
       });
   },
 });
-
-export const selectAllProducts = (state: ProductsState) => state.products;
 
 export const productsReducer = productsSlice.reducer;
