@@ -1,7 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-import { initialState, ProductsState } from './products.state';
+import {PaginationList, Product} from "../../models";
+
+export interface ProductsState {
+    error: string | null;
+    products: PaginationList<Product> | null;
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+}
+
+const initialState: ProductsState = {
+    error: null,
+    products: null,
+    status: 'idle',
+};
 
 const name = 'products';
 
@@ -15,7 +27,7 @@ export const fetchProducts = createAsyncThunk(
 
       return data;
     } catch (error) {
-      throw Error(error.response.data.error || 'Failed to fetch products');
+      throw Error('Failed to fetch products');
     }
   }
 );
@@ -30,12 +42,12 @@ export const productsSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.products = action.payload;
         state.status = 'idle';
+        state.products = action.payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
-        state.error = action.error.message || 'Failed to fetch products';
         state.status = 'failed';
+        state.error = action.error.message || 'Failed to fetch products';
       });
   },
 });
