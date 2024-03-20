@@ -39,10 +39,13 @@ const ProductsTable = ({
           </TableHead>
 
           <TableBody>
-            {(products || []).map(({ id, name, year }: Product) => (
+            {(products || []).map(({ color, id, name, year }: Product) => (
               <TableRow
                 key={name}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{
+                  '&:last-child td, &:last-child th': { border: 0 },
+                  td: { backgroundColor: color },
+                }}
               >
                 <TableCell align="center">{id}</TableCell>
                 <TableCell align="center">{name}</TableCell>
