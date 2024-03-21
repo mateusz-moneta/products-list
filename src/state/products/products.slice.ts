@@ -76,7 +76,7 @@ export const productsSlice = createSlice({
       })
       .addCase(fetchProduct.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch products';
+        state.error = action.error.message || 'Failed to fetch product';
       })
       .addCase(fetchProducts.pending, (state, action) => {
         state.status = 'loading';
