@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 import Input from '@mui/material/Input';
 
 import { fetchProducts } from '../state/products';
@@ -51,6 +52,16 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
+      {productsStatus === 'loading' && (
+        <div className="dashboard__loading-spinner">
+          <CircularProgress />
+        </div>
+      )}
+
+      {productsError && (
+        <div className="dashboard__error-message">Error: {productsError}</div>
+      )}
+
       {productsPaginationList && (
         <>
           <div className="dashboard__input">

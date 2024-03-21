@@ -12,6 +12,8 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { Product } from '../../models';
 import DetailsModal from './DetailsModal';
+import { useAppDispatch } from '../../hooks';
+import { setSelectedProduct } from '../../state/products';
 
 const ProductsTable = ({
   handleChangePage,
@@ -29,10 +31,19 @@ const ProductsTable = ({
   products: Product[];
   total: number;
 }) => {
+  const dispatch = useAppDispatch();
+
   const [open, setOpen] = React.useState(false);
 
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    dispatch(setSelectedProduct(null));
+  };
+
+  const handleOpen = (product: Product) => {
+    dispatch(setSelectedProduct(product));
+    setOpen(true);
+  };
 
   return (
     <>
@@ -47,18 +58,18 @@ const ProductsTable = ({
           </TableHead>
 
           <TableBody>
-            {(products || []).map(({ color, id, name, year }: Product) => (
+            {(products || []).map((product: Product) => (
               <TableRow
-                onClick={handleOpen}
-                key={name}
+                onClick={() => handleOpen(product)}
+                key={product.name}
                 sx={{
                   '&:last-child td, &:last-child th': { border: 0 },
-                  td: { backgroundColor: color },
+                  td: { backgroundColor: product.color },
                 }}
               >
-                <TableCell align="center">{id}</TableCell>
-                <TableCell align="center">{name}</TableCell>
-                <TableCell align="center">{year}</TableCell>
+                <TableCell align="center">{product.id}</TableCell>
+                <TableCell align="center">{product.name}</TableCell>
+                <TableCell align="center">{product.year}</TableCell>
               </TableRow>
             ))}
           </TableBody>

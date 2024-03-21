@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import { PaginationList, Product } from '../../models';
@@ -6,12 +6,14 @@ import { PaginationList, Product } from '../../models';
 export interface ProductsState {
   error: string | null;
   paginationList: PaginationList<Product> | null;
+  selectedProduct: Product | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
 }
 
 const initialState: ProductsState = {
   error: null,
   paginationList: null,
+  selectedProduct: null,
   status: 'idle',
 };
 
@@ -35,11 +37,17 @@ export const fetchProducts = createAsyncThunk(
 export const productsSlice = createSlice({
   name,
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedProduct(state, { payload }: PayloadAction<Product | null>) {
+      state.selectedProduct = payload;
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(fetchProducts.pending, (state, action) => {
         state.status = 'loading';
+        state.error = null;
+        state.paginationList = null;
       })
       .addCase(fetchProducts.fulfilled, (state, { payload }) => {
         state.status = 'succeeded';
@@ -51,5 +59,7 @@ export const productsSlice = createSlice({
       });
   },
 });
+
+export const { setSelectedProduct } = productsSlice.actions;
 
 export const productsReducer = productsSlice.reducer;
