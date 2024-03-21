@@ -52,26 +52,6 @@ function Dashboard() {
   const productsStatus = useAppSelector((state) => state.products.status);
 
   useEffect(() => {
-    if (productsStatus === 'idle') {
-      if (Number(searchParams.get('id'))) {
-        dispatch(
-          fetchProduct({
-            id: Number(searchParams.get('id')),
-          })
-        );
-        return;
-      }
-
-      dispatch(
-        fetchProducts({
-          page: Number(searchParams.get('page')) || 1,
-          perPage: defaultPerPage,
-        })
-      );
-    }
-  }, [productsStatus, dispatch]);
-
-  useEffect(() => {
     const delayInputTimeoutId = setTimeout(() => {
       const id = Number(searchParams.get('id'));
       const page = Number(searchParams.get('page'));
@@ -85,7 +65,7 @@ function Dashboard() {
     }, debounceValue);
 
     return () => clearTimeout(delayInputTimeoutId);
-  }, [searchParams, debounceValue]);
+  }, [searchParams, debounceValue, dispatch]);
 
   return (
     <div className="dashboard">
