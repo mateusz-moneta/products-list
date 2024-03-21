@@ -65,7 +65,7 @@ function Dashboard() {
     }, debounceValue);
 
     return () => clearTimeout(delayInputTimeoutId);
-  }, [searchParams, debounceValue, dispatch]);
+  }, [searchParams, dispatch]);
 
   return (
     <div className="dashboard">
