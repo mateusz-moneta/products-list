@@ -11,9 +11,12 @@ import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 
 import { Product } from '../../models';
-import DetailsModal from './DetailsModal';
+import {
+  removeSelectedProduct,
+  setSelectedProduct,
+} from '../../state/products';
 import { useAppDispatch } from '../../hooks';
-import { setSelectedProduct } from '../../state/products';
+import DetailsModal from './DetailsModal';
 
 const ProductsTable = ({
   handleChangePage,
@@ -37,7 +40,7 @@ const ProductsTable = ({
 
   const handleClose = () => {
     setOpen(false);
-    dispatch(setSelectedProduct(null));
+    dispatch(removeSelectedProduct());
   };
 
   const handleOpen = (product: Product) => {
@@ -76,14 +79,16 @@ const ProductsTable = ({
         </Table>
       </TableContainer>
 
-      <TablePagination
-        component="div"
-        count={total}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={perPage}
-        rowsPerPageOptions={[]}
-      />
+      {total && (
+        <TablePagination
+          component="div"
+          count={total}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={perPage}
+          rowsPerPageOptions={[]}
+        />
+      )}
 
       <DetailsModal handleClose={handleClose} open={open} />
     </>

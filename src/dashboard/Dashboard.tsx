@@ -3,14 +3,16 @@ import { useSearchParams } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import Input from '@mui/material/Input';
 
-import { fetchProducts } from '../state/products';
+import { fetchProduct, fetchProducts } from '../state/products';
 import { Product } from '../models';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import ProductsTable from './components/ProductsTable';
 
 import './Dashboard.scss';
 
+const debounceValue = 500;
 const defaultPerPage = 5;
+const minValue = 1;
 
 function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,19 +20,29 @@ function Dashboard() {
   const dispatch = useAppDispatch();
 
   const handleChangeId = (event: React.ChangeEvent) => {
-    const { value: id } = event.target as HTMLInputElement;
+    const { value } = event.target as HTMLInputElement;
 
-    setSearchParams({ id, page: '1' });
+    if (value === '') {
+      searchParams.delete('id');
+      setSearchParams(searchParams);
+
+      return;
+    }
+
+    const id = Number(value);
+
+    if (id < minValue) {
+      return;
+    }
+
+    setSearchParams({ id: value, page: '1' });
   };
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     page: number
   ) => {
-    searchParams.set('page', (page + 1).toString());
-    setSearchParams(searchParams);
-
-    dispatch(fetchProducts({ page: page + 1, perPage: defaultPerPage }));
+    setSearchParams({ page: (page + 1).toString() });
   };
 
   const productsPaginationList = useAppSelector(
@@ -41,6 +53,15 @@ function Dashboard() {
 
   useEffect(() => {
     if (productsStatus === 'idle') {
+      if (Number(searchParams.get('id'))) {
+        dispatch(
+          fetchProduct({
+            id: Number(searchParams.get('id')),
+          })
+        );
+        return;
+      }
+
       dispatch(
         fetchProducts({
           page: Number(searchParams.get('page')) || 1,
@@ -50,6 +71,22 @@ function Dashboard() {
     }
   }, [productsStatus, dispatch]);
 
+  useEffect(() => {
+    const delayInputTimeoutId = setTimeout(() => {
+      const id = Number(searchParams.get('id'));
+      const page = Number(searchParams.get('page'));
+
+      if (id) {
+        dispatch(fetchProduct({ id }));
+        return;
+      }
+
+      dispatch(fetchProducts({ page, perPage: defaultPerPage }));
+    }, debounceValue);
+
+    return () => clearTimeout(delayInputTimeoutId);
+  }, [searchParams, debounceValue]);
+
   return (
     <div className="dashboard">
       {productsStatus === 'loading' && (
@@ -58,30 +95,31 @@ function Dashboard() {
         </div>
       )}
 
+      {(productsError || productsPaginationList) && (
+        <div className="dashboard__input">
+          <Input
+            defaultValue={searchParams.get('id') || ''}
+            inputProps={{ min: minValue }}
+            onChange={handleChangeId}
+            type={'number'}
+          />
+        </div>
+      )}
+
       {productsError && (
         <div className="dashboard__error-message">Error: {productsError}</div>
       )}
 
       {productsPaginationList && (
-        <>
-          <div className="dashboard__input">
-            <Input
-              defaultValue={searchParams.get('id') || ''}
-              onChange={handleChangeId}
-              type={'number'}
-            />
-          </div>
-
-          <div className="dashboard__products-table">
-            <ProductsTable
-              handleChangePage={handleChangePage}
-              page={productsPaginationList.page - 1}
-              perPage={productsPaginationList.per_page}
-              products={productsPaginationList.data as Product[]}
-              total={productsPaginationList.total}
-            />
-          </div>
-        </>
+        <div className="dashboard__products-table">
+          <ProductsTable
+            handleChangePage={handleChangePage}
+            page={productsPaginationList.page - 1}
+            perPage={productsPaginationList.per_page}
+            products={productsPaginationList.data as Product[]}
+            total={productsPaginationList.total}
+          />
+        </div>
       )}
     </div>
   );
